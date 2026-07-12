@@ -1,0 +1,34 @@
+Sample run 1 - Cloud path (expected when a valid OpenAI key is present)
+---------------------------------------------------------------
+AfyaPlus triage engine starting...
+Patient message: I have had severe chest pain for 20 minutes and I feel short of breath.
+Cloud path succeeded.
+Parsed dictionary:
+{
+  "is_critical_emergency": true,
+  "detected_symptoms": ["chest pain", "shortness of breath"],
+  "clinical_reasoning_summary": "Severe chest pain and shortness of breath are concerning symptoms requiring urgent review.",
+  "routing_destination": "Emergency Department"
+}
+Routing decision: Emergency Department
+
+Sample run 2 - Cloud failure fallback
+------------------------------------
+AfyaPlus triage engine starting...
+Patient message: I have had severe chest pain for 20 minutes and I feel short of breath.
+Cloud path failed or timed out; falling back to local Ollama.
+Cloud error: Error code: 401 - invalid_api_key
+Local latency: 10.22s
+Parsed dictionary:
+{
+  "is_critical_emergency": false,
+  "detected_symptoms": [],
+  "clinical_reasoning_summary": "No structured analysis available.",
+  "routing_destination": "primary_care"
+}
+Routing decision: primary_care
+
+Sample run 3 - Local Ollama direct run
+------------------------------------
+$ ollama run llama3.2 'You are AfyaPlus Triage Engine. Return only a single valid JSON object with keys is_critical_emergency, detected_symptoms, clinical_reasoning_summary, routing_destination. Patient message: I have had severe chest pain for 20 minutes and I feel short of breath.'
+{"is_critical_emergency": true, "detected_symptoms": ["chest pain", "shortness of breath"], "clinical_reasoning_summary": "Severe chest pain with shortness of breath suggests a possible acute coronary syndrome or pulmonary embolism. Further evaluation and testing are required.", "routing_destination": "Emergency Department"}
